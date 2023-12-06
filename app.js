@@ -1,5 +1,4 @@
 
-const path = require('path')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const express = require('express')
@@ -27,14 +26,8 @@ mongoose
   })
 
 app.use(cors())
-
-if (config.NODE_ENV === 'production') {
-  // Serve the built React files from the frontend's build folder
-  app.use(express.static(path.join(__dirname, 'dist')))
-  logger.info('Production Server Started')
-}
-
-
+// Serve the built React files from the frontend's build folder
+app.use(express.static('dist'))
 app.use(express.json())
 app.use(middleware.requestLogger)
 app.use(middleware.tokenExtractor)
