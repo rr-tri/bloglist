@@ -31,10 +31,11 @@ app.use(cors())
 if (config.NODE_ENV === 'prod ') {
   // Serve the built React files from the frontend's build folder
   app.use(express.static(path.join(__dirname, 'dist')))
-  logger.info('Production Server Started', path.join(__dirname, 'dist'))
-  logger.info('Production Server Started', config.NODE_ENV)
+  logger.info('Production Server Started')
 }
 logger.info('Production Server ', config.NODE_ENV.length)
+logger.info('Production Server', config.NODE_ENV)
+
 app.use(express.json())
 app.use(middleware.requestLogger)
 app.use(middleware.tokenExtractor)
