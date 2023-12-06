@@ -33,11 +33,11 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedInUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      if (user) {
-        dispatch({ type: 'LOGIN', user })
-        blogService.setToken(user.token)
-        userService.setToken(user.token)
-      }
+
+      dispatch({ type: 'LOGIN', user })
+      blogService.setToken(user.token)
+      userService.setToken(user.token)
+
     }
   }, [])
 
@@ -51,6 +51,8 @@ const App = () => {
       dispatch({ type: 'LOGIN', user })
       window.localStorage.setItem('loggedInUser', JSON.stringify(user))
       blogService.setToken(user.token)
+      userService.setToken(user.token)
+
       setUsername('')
       setPassword('')
     } catch (exception) {
