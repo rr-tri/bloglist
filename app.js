@@ -43,6 +43,12 @@ app.use('/api/blogs', blogRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/login', loginRouter)
 
+app.get('/version', (req, res) => {
+  res.send('1') // change this string to ensure a new version deployed
+})
+app.get('/healthcheck', (req, res) => {
+  res.status(200).send('ok')
+})
 if (config.NODE_ENV === 'test ') {
   const testingRouter = require('./controllers/testing')
   app.use('/api/testing', testingRouter)
