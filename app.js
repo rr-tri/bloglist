@@ -16,7 +16,7 @@ const config = require('./utils/config.js')
 const app = express()
 
 mongoose.set('strictQuery', false)
-logger.info('Starting to establish connection to MongoDB')
+// logger.info('Starting to establish connection to MongoDB')
 mongoose
   .connect(config.MONGODB_URI)
   .then(() => {
@@ -31,9 +31,10 @@ app.use(cors())
 if (config.NODE_ENV === 'prod ') {
   // Serve the built React files from the frontend's build folder
   app.use(express.static(path.join(__dirname, 'dist')))
-  // logger.info("Production Server Started", config.MONGODB_URI)
+  logger.info('Production Server Started', path.join(__dirname, 'dist'))
+  logger.info('Production Server Started', config.NODE_ENV)
 }
-
+logger.info('Production Server ', config.NODE_ENV.length)
 app.use(express.json())
 app.use(middleware.requestLogger)
 app.use(middleware.tokenExtractor)
@@ -59,5 +60,5 @@ app.use(middleware.errorHandler)
 // Start the server on port 3001 (or any desired port)
 const PORT = config.PORT || 3001
 app.listen(PORT, () => {
-  // console.log(`Server is running on port ${PORT}`)
+  logger.info(`Server is running on port ${PORT}`)
 })
