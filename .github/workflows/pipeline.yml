@@ -46,7 +46,7 @@ jobs:
         if: github.event_name == 'push' &&  success()
         with:
           severity: info
-          text: A new version of pokedex deployed.
+          text: A new version deployed.
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   
       - name: Notify Deployment Failure and Show Commit Info
