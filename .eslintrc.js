@@ -6,6 +6,11 @@ module.exports = {
     'node': true
 
   },
+  'settings': {
+    'react': {
+      'version': 'detect' // or specify the React version you are using, like "16.8" or "17.0"
+    }
+  },
   'extends': [
     'eslint:recommended',
     'plugin:react/recommended',
