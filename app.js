@@ -38,7 +38,7 @@ app.use('/api/users', userRoutes)
 app.use('/api/login', loginRouter)
 
 app.get('/version', (req, res) => {
-  res.send('1') // change this string to ensure a new version deployed
+  res.send('1.0') // change this string to ensure a new version deployed
 })
 app.get('/health', (req, res) => {
   res.status(200).send('ok')
