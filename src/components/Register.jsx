@@ -1,6 +1,7 @@
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Box from '@mui/material/Box'
+import { useMutation } from '@tanstack/react-query'
 
 import { useNavigate } from 'react-router-dom'
 import React, { useState } from 'react'
@@ -15,32 +16,27 @@ const Register = () => {
   const [passwordRepeat, setPasswordRepeat] = useState('')
   const navigate = useNavigate()
   const { showNotification } = useNotification()
-
+  const registerMutation = useMutation({
+    mutationFn: userService.createUser,
+    onError: (error) => {
+      showNotification(error.response.data.error, 'error', 5000)
+    },
+    onSuccess: () => {
+      showNotification(
+        'User ' + name + ' register successful!!',
+        'success',
+        5000
+      )
+      navigate('/login')
+    },
+  })
   const signup = async (e) => {
     e.preventDefault()
     if (password !== passwordRepeat) {
       showNotification('Both password doesn\'t match!!', 'error', 5000)
       return
     }
-    try {
-      const user = await userService.createUser({ name, password, username })
-
-      if (user.data) {
-        showNotification(
-          'User ' + name + ' register successful!!',
-          'success',
-          5000
-        )
-        navigate('/login')
-      }
-    } catch (e) {
-      // console.log(e.response.data.error.split(',')[1].split('.')[1])
-      showNotification(
-        e.response.data.error.split(',')[1].split('.')[0],
-        'error',
-        5000
-      )
-    }
+    registerMutation.mutate({ name, password, username })
   }
   return (
     <Box

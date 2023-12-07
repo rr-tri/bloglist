@@ -26,6 +26,7 @@ const Blog = ({ user }) => {
   const { showNotification } = useNotification()
 
   const blogId = useParams().blogId
+
   const getblog = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll,
@@ -40,7 +41,7 @@ const Blog = ({ user }) => {
   const updateMutation = useMutation({
     mutationFn: blogService.updateBlog,
     onError: (error) => {
-      showNotification(error.message, 'error', 5000)
+      showNotification(error.response.data.error, 'error', 5000)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
@@ -52,7 +53,7 @@ const Blog = ({ user }) => {
     mutationFn: blogService.remove,
     onError: (error) => {
       // An error happened!
-      showNotification(error.message, 'warning', 5000)
+      showNotification(error.response.data.error, 'warning', 5000)
     },
     onSuccess: () => {
       // eslint-disable-next-line no-console
@@ -64,8 +65,17 @@ const Blog = ({ user }) => {
     }
   })
 
+  const commentMutation = useMutation({
+    mutationFn: blogService.createComment,
+    onError: (error) => {
+      showNotification(error.response.data.error, 'error', 5000)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+      setContent('')
 
-
+    },
+  })
 
   const handleDelete = () => {
     const confirmed = window.confirm(`Remove blog ${blog.title} ?`)
@@ -74,23 +84,14 @@ const Blog = ({ user }) => {
     }
   }
   const handleUpdateLikes = () => {
-    try {
+    if (user) {
       updateMutation.mutate({ ...blog, likes: blog.likes + 1 })
-    } catch (error) {
-      showNotification(
-        error.response.data.error ||
-        'Opss something went wrong while updating',
-        'error',
-        5000
-      )
+    } else {
+      navigate('/login')
     }
   }
   const submitComment = () => {
-    blogService.createComment({ blogId: blog.id, content }).then(() => {
-
-      queryClient.invalidateQueries('blogs')
-    })
-    setContent('')
+    commentMutation.mutate({ blogId: blog.id, content })
   }
   if (getblog.isLoading) {
     return (

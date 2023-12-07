@@ -2,6 +2,7 @@
 const mongoose = require('mongoose')
 const cors = require('cors')
 const express = require('express')
+const path = require('path')
 
 
 const middleware = require('./utils/middleware')
@@ -26,8 +27,7 @@ mongoose
   })
 
 app.use(cors())
-// Serve the built React files from the frontend's build folder
-app.use(express.static('dist'))
+
 app.use(express.json())
 app.use(middleware.requestLogger)
 app.use(middleware.tokenExtractor)
@@ -43,10 +43,19 @@ app.get('/version', (req, res) => {
 app.get('/healthcheck', (req, res) => {
   res.status(200).send('ok')
 })
+// // Serve the built React files from the frontend's build folder
+// app.use(express.static('dist'))
+
 if (config.NODE_ENV === 'test ') {
   const testingRouter = require('./controllers/testing')
   app.use('/api/testing', testingRouter)
 }
+
+
+const DIST_PATH = path.resolve(__dirname, './dist')
+const INDEX_PATH = path.resolve(DIST_PATH, 'index.html')
+app.use(express.static(DIST_PATH))
+app.get('*', (req, res) => res.sendFile(INDEX_PATH))
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

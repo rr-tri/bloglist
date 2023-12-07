@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 
 import { useQuery } from '@tanstack/react-query'
 import userService from '../services/users'
@@ -7,13 +7,22 @@ import React from 'react'
 import Container from '@mui/material/Container'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
-import Tooltip from '@mui/material/Tooltip'
 import StyledLink from '@mui/material/Link'
 
 
 
+
 const User = () => {
+  const navigate = useNavigate()
   const userId = useParams().userId
+  const loggedUserJSON = window.localStorage.getItem('loggedInUser')
+  if (loggedUserJSON) {
+    const user = JSON.parse(loggedUserJSON)
+    userService.setToken(user.token)
+
+  } else {
+    navigate('/login')
+  }
   const getUser = useQuery({
     queryKey: ['users'],
     queryFn: userService.getUsers,
@@ -47,21 +56,17 @@ const User = () => {
       <ol>
         {user.blogs.map((blog) => (
           <li key={blog.id}>
-            <Tooltip
-              title="View Blog Details"
-              disableFocusListener
-              placement="top-start"
+
+            <StyledLink
+              component={Link}
+              variant="h6"
+              color="inherit"
+              underline="none"
+              to={`/blogs/${blog.id}`}
+              data-testid="addedBlog"
             >
-              <StyledLink
-                component={Link}
-                variant="h6"
-                color="inherit"
-                underline="none"
-                to={`/blogs/${blog.id}`}
-              >
-                {blog.title}
-              </StyledLink>{' '}
-            </Tooltip>
+              {blog.title}
+            </StyledLink>{' '}
             <Typography variant="caption">by {blog.author}</Typography>
           </li>
         ))}

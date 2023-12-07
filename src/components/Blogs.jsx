@@ -15,10 +15,12 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNotification } from '../contexts/NotificationContext' // Import the context
 import blogService from '../services/blogs'
+import { useUser } from '../contexts/UserContext'
 
 const Blogs = () => {
   const [createBlogVisibility, setCreateBlogVisibility] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
+  const { state } = useUser()
 
   const queryClient = useQueryClient()
   const { showNotification } = useNotification()
@@ -75,9 +77,7 @@ const Blogs = () => {
     }
   }
 
-  if (getblogs.isError) {
-    return <div>Error: Connect to the Internet</div>
-  }
+
   const blogs = getblogs.data || []
   const itemsPerPage = 7
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -91,7 +91,13 @@ const Blogs = () => {
           <Button
             variant="contained"
             color="info"
-            onClick={() => setCreateBlogVisibility(true)}
+            onClick={() => {
+              if (state.user) {
+                setCreateBlogVisibility(true)
+              } else {
+                showNotification('Please login first to add blog', 'info', 5000)
+              }
+            }}
           >
             new blog
           </Button>
@@ -103,7 +109,7 @@ const Blogs = () => {
         createBlog={createBlog}
       />
       {getblogs.isLoading ? <CircularProgress color="success" /> : null}
-
+      {(getblogs.isError) ? <div>Problem fetching data: please try again later</div> : null}
       <Box>
         {paginatedBlogs.map((blog) => (
           <Box data-testid="blog" key={blog.id} sx={{ p: 2 }}>

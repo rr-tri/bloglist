@@ -26,6 +26,26 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 // eslint-disable-next-line no-undef
+Cypress.Commands.add('Register', (name, username, password, repeatPassword) => {
+  cy.get('[data-testid="login-button"]').should('exist').click()
+  cy.contains('Signup')
+  // Signup in the login form
+  cy.contains('Signup').click()
+
+  // Find and fill in the username and password fields
+  cy.get('[name="Full name"]').type(name)
+  cy.get('[name="Username"]').type(username)
+  cy.get('[name="Password"]').type(password)
+  cy.get('[name="PasswordRepeat"]').type(repeatPassword)
+
+  cy.get('form').submit()
+}, 1000)
+Cypress.Commands.add('Login', (username, password) => {
+  cy.get('[data-testid="login-button"]').click()
+  cy.get('[name="Username"]').type(username)
+  cy.get('[name="Password"]').type(password)
+  cy.get('form').submit()
+}, 1000)
 Cypress.Commands.add('createBlog', (title, author, url) => {
   cy.contains('new blog').click()
   cy.get('[data-testid="title-input"]').type(title)

@@ -166,5 +166,10 @@ router.delete('/:id', async (request, response, next) => {
     next(error)
   }
 })
-
+router.post('/delete/testblog', async (request, response) => {
+  await Blog.findOneAndDelete({
+    title: 'New Test Blog Title'
+  })
+  response.status(204).end()
+})
 module.exports = router
