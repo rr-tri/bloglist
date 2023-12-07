@@ -15,6 +15,7 @@ import React from 'react'
 
 import { useUser } from '../contexts/UserContext'
 import userService from '../services/users'
+import Typography from '@mui/material/Typography'
 
 const Users = () => {
   const { state } = useUser()
@@ -46,7 +47,7 @@ const Users = () => {
   const users = getUsers.data || []
   return (
     <>
-      <h1>Users</h1>
+      <Typography variant='h5'>Users</Typography>
       <TableContainer>
         <Table>
           <TableHead>

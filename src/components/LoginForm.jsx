@@ -2,16 +2,49 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
 
-const LoginForm = ({ handleLogin, username, password, handleUsernameChange, handlePasswordChange }) => {
+import loginService from '../services/login'
+import userService from '../services/users'
+import blogService from '../services/blogs'
+
+import { useNotification } from '../contexts/NotificationContext'
+import { useUser } from '../contexts/UserContext'
+
+const LoginForm = () => {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+
+
+  const { showNotification } = useNotification()
+  const { dispatch } = useUser()
   const navigate = useNavigate()
+  const loginMutation = useMutation({
+    mutationFn: loginService.login,
+    onError: (error) => {
+      showNotification(error.response.data.error, 'error', 5000)
+    },
+    onSuccess: (data) => {
+      dispatch({ type: 'LOGIN', user: data })
+      window.localStorage.setItem('loggedInUser', JSON.stringify(data))
+      blogService.setToken(data.token)
+      userService.setToken(data.token)
+      setUsername('')
+      setPassword('')
+      showNotification(`${data.username} logged in successfully`, 'success', 5000)
+      navigate('/')
+
+    },
+  })
+
   const login = (event) => {
     event.preventDefault()
-    handleLogin()
-    navigate('/')
+    loginMutation.mutate({
+      username,
+      password
+    })
   }
   return (
     <Box
@@ -35,7 +68,7 @@ const LoginForm = ({ handleLogin, username, password, handleUsernameChange, hand
         type="text"
         value={username}
         name="Username"
-        onChange={handleUsernameChange}
+        onChange={({ target }) => setUsername(target.value)}
       />
 
       <TextField
@@ -44,7 +77,7 @@ const LoginForm = ({ handleLogin, username, password, handleUsernameChange, hand
         type="password"
         value={password}
         name="Password"
-        onChange={handlePasswordChange}
+        onChange={({ target }) => setPassword(target.value)}
       />
 
       <Button color="success" variant="contained" type="submit">

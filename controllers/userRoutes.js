@@ -24,13 +24,17 @@ usersRouter.post('/', async (request, response, next) => {
     } else {
       response
         .status(400)
-        .json('Both username and password must be at least 3 characters long.')
+        .json({ error: 'Both username and password must be at least 3 characters long.' })
     }
   } catch (e) {
-    if (e.name === 'ValidationError') {
-      return response.status(400).json({ error: e.message })
+    const errorPattern = /E11000 duplicate key error collection: .*{ username: "(.+)" }/
+    const match = e.message.match(errorPattern)
+    if (match && match.length > 1) {
+      const username = match[1]
+      logger.error(`Username "${username}" already exists.`)
+      return response.status(400).json({ error: `Username "${username}" already exists.` })
     }
-    logger.error(e.message)
+
     return next(e.message)
   }
 })
@@ -48,5 +52,11 @@ usersRouter.get('/', async (request, response) => {
   })
   response.json(users)
 })
+usersRouter.post('/delete/testuser', async (request, response) => {
+  await User.findOneAndDelete({
+    username: 'Tester'
+  })
 
+  response.status(204).end()
+})
 module.exports = usersRouter
