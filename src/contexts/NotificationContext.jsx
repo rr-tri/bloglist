@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import React, { createContext, useContext, useReducer } from 'react'
 import PropTypes from 'prop-types'
 // Create a context for the notification
